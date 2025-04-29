@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
+import mainLogo from "./assets/Foracort12.png";
 
 const App = () => {
   const [blowIntensity, setBlowIntensity] = useState(0);
   const [isBlowing, setIsBlowing] = useState(false);
   const [isHolding, setIsHolding] = useState(false);
+  const [leafImage, setLeafImage] = useState('1.png');
   const animationRef = useRef(null);
-  const particlesRef = useRef([]);
 
   useEffect(() => {
     let audioContext;
@@ -24,11 +25,16 @@ const App = () => {
         const lowFreqRange = dataArray.slice(0, 4);
         const intensity = lowFreqRange.reduce((a, b) => a + b, 0) / lowFreqRange.length;
 
-        if (intensity > 20 && isHolding) {
-          setBlowIntensity(Math.min(intensity, 20));
+        if (intensity > 10 && isHolding) {
+          const cappedIntensity = Math.min(intensity, 50);
+          setBlowIntensity(cappedIntensity);
           setIsBlowing(true);
+          // Pick a random leaf image
+          const imgIndex = Math.floor(Math.random() * 8) + 1;
+          setLeafImage(`${imgIndex}.png`);
         } else {
           setIsBlowing(false);
+          setBlowIntensity(0);
         }
 
         rafId = requestAnimationFrame(analyze);
@@ -48,7 +54,6 @@ const App = () => {
         analyser = audioContext.createAnalyser();
         microphone = audioContext.createMediaStreamSource(mediaStream);
         microphone.connect(analyser);
-        // analyser.fftSize = 256;
         analyser.fftSize = 256;
 
         detectBlowing();
@@ -64,9 +69,8 @@ const App = () => {
       if (mediaStream) mediaStream.getTracks().forEach(track => track.stop());
       if (audioContext) audioContext.close();
     };
-  }, [isHolding]); // Re-run detection if isHolding state changes
+  }, [isHolding]);
 
-  // Attach hold listeners after the DOM is ready
   useEffect(() => {
     const elem = animationRef.current;
     if (!elem) return;
@@ -91,56 +95,23 @@ const App = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (isBlowing) {
-      const particles = [];
-      for (let i = 0; i < 15; i++) {
-        particles.push({
-          id: i,
-          x: Math.random() * 100,
-          y: Math.random() * 100,
-          size: Math.random() * 10 + 5,
-          speedX: (Math.random() - 0.5) * 5,
-          speedY: (Math.random() - 0.5) * 5,
-          opacity: Math.random() * 0.5 + 0.5,
-        });
-      }
-      particlesRef.current = particles;
-    }
-  }, [isBlowing]);
-
   return (
     <div className="blow-container">
       <div
         ref={animationRef}
-        className={`blow-element ${isBlowing ? 'active' : ''}`}
+        className="blow-element"
         style={{
-          transform: `scale(${1 + blowIntensity / 50}) rotate(${blowIntensity / 10}deg)`,
+          transform: `translate(${blowIntensity * 1.5}px, ${-blowIntensity}px) rotate(${blowIntensity / 5}deg)`,
+          transition: 'transform 0.2s ease-out',
         }}
       >
-        Blow on your microphone!
+        <img src={`/images/${leafImage}`} alt="leaf" className="leaf-image" />
         {!isBlowing && <div className="instruction">Hold & blow — or tap & blow</div>}
       </div>
 
-      {isBlowing && (
-        <div className="particles-container">
-          {particlesRef.current.map((particle) => (
-            <div
-              key={particle.id}
-              className="particle"
-              style={{
-                left: `${particle.x}%`,
-                top: `${particle.y}%`,
-                width: `${particle.size}px`,
-                height: `${particle.size}px`,
-                opacity: particle.opacity,
-                transform: `translate(${particle.speedX * blowIntensity / 10}px, 
-                                       ${particle.speedY * blowIntensity / 10}px)`,
-              }}
-            />
-          ))}
-        </div>
-      )}
+      <div className="logo-section">
+        <img src={mainLogo} alt="Logo" className="logo" />
+      </div>
     </div>
   );
 };
