@@ -11,14 +11,8 @@ import image7 from "./assets/7.png";
 import image8 from "./assets/8.png";
 
 const leafImages = [
-  image1,
-  image2,
-  image3,
-  image4,
-  image5,
-  image6,
-  image7,
-  image8,
+  image1, image2, image3, image4,
+  image5, image6, image7, image8,
 ];
 
 const generateLeaves = (count) => {
@@ -32,6 +26,7 @@ const generateLeaves = (count) => {
   }
   return leaves;
 };
+
 
 const App = () => {
   const [leaves, setLeaves] = useState(generateLeaves(9000)); // Try 60 or more
@@ -71,6 +66,7 @@ const App = () => {
               };
             })
           );
+          
         }
 
         rafId = requestAnimationFrame(analyze);
@@ -81,9 +77,7 @@ const App = () => {
 
     const initAudio = async () => {
       try {
-        mediaStream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-        });
+        mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         analyser = audioContext.createAnalyser();
         microphone = audioContext.createMediaStreamSource(mediaStream);
@@ -136,8 +130,8 @@ const App = () => {
             alt="leaf"
             className={`leaf ${leaf.removed ? "fly-away" : ""}`}
             style={{
-              top: `${leaf.y}px`,
-              left: `${leaf.x}px`,
+              top: `${leaf.y}%`,
+              left: `${leaf.x}%`,
               transform: `rotate(${leaf.rotation}deg)`,
             }}
           />
