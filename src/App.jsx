@@ -10,23 +10,28 @@ import image6 from "./assets/6.png";
 import image7 from "./assets/7.png";
 import image8 from "./assets/8.png";
 
-const App = () => {
-  const [blowIntensity, setBlowIntensity] = useState(0);
-  const [isBlowing, setIsBlowing] = useState(false);
-  const [isHolding, setIsHolding] = useState(false);
-  const [leafImage, setLeafImage] = useState(image1);
-  const leafImages = [
-    image1,
-    image2,
-    image3,
-    image4,
-    image5,
-    image6,
-    image7,
-    image8, 
-  ];
+const leafImages = [
+  image1, image2, image3, image4,
+  image5, image6, image7, image8,
+];
 
-  const animationRef = useRef(null);
+const generateLeaves = (count) => {
+  const leaves = [];
+  for (let i = 0; i < count; i++) {
+    const img = leafImages[i % leafImages.length];
+    const x = Math.random() * (500 - 60); // Avoid overflow, assuming leaf is 60px wide
+    const y = Math.random() * (500 - 60);
+    const rotation = Math.random() * 360;
+    leaves.push({ id: i, src: img, x, y, rotation, removed: false });
+  }
+  return leaves;
+};
+
+
+const App = () => {
+  const [leaves, setLeaves] = useState(generateLeaves(9000)); // Try 60 or more
+  const [isHolding, setIsHolding] = useState(false);
+  const containerRef = useRef(null);
 
   useEffect(() => {
     let audioContext;
@@ -45,16 +50,14 @@ const App = () => {
         const intensity =
           lowFreqRange.reduce((a, b) => a + b, 0) / lowFreqRange.length;
 
-        if (intensity > 10 && isHolding) {
-          const cappedIntensity = Math.min(intensity, 50);
-          setBlowIntensity(cappedIntensity);
-          setIsBlowing(true);
-          // Pick a random leaf image
-          const imgIndex = Math.floor(Math.random() * 8) + 1;
-          setLeafImage(leafImages[imgIndex - 1]);
-        } else {
-          setIsBlowing(false);
-          setBlowIntensity(0);
+        if (intensity > 5 && isHolding) {
+          setLeaves((prev) =>
+            prev.map((leaf) =>
+              leaf.removed
+                ? leaf
+                : { ...leaf, removed: Math.random() > 0.3 } // 70% chance to remove
+            )
+          );
         }
 
         rafId = requestAnimationFrame(analyze);
@@ -65,18 +68,12 @@ const App = () => {
 
     const initAudio = async () => {
       try {
-        if (!navigator.mediaDevices?.getUserMedia) {
-          throw new Error("Microphone not supported.");
-        }
-
-        mediaStream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-        });
+        mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         analyser = audioContext.createAnalyser();
         microphone = audioContext.createMediaStreamSource(mediaStream);
         microphone.connect(analyser);
-        analyser.fftSize = 256;
+        analyser.fftSize = 1024;
 
         detectBlowing();
       } catch (err) {
@@ -94,46 +91,42 @@ const App = () => {
   }, [isHolding]);
 
   useEffect(() => {
-    const elem = animationRef.current;
+    const elem = containerRef.current;
     if (!elem) return;
 
-    const handleHoldStart = () => setIsHolding(true);
-    const handleHoldEnd = () => {
-      setIsHolding(false);
-      setIsBlowing(false);
-      setBlowIntensity(0);
-    };
+    const start = () => setIsHolding(true);
+    const end = () => setIsHolding(false);
 
-    elem.addEventListener("mousedown", handleHoldStart);
-    elem.addEventListener("touchstart", handleHoldStart);
-    window.addEventListener("mouseup", handleHoldEnd);
-    window.addEventListener("touchend", handleHoldEnd);
+    elem.addEventListener("mousedown", start);
+    elem.addEventListener("touchstart", start);
+    window.addEventListener("mouseup", end);
+    window.addEventListener("touchend", end);
 
     return () => {
-      elem.removeEventListener("mousedown", handleHoldStart);
-      elem.removeEventListener("touchstart", handleHoldStart);
-      window.removeEventListener("mouseup", handleHoldEnd);
-      window.removeEventListener("touchend", handleHoldEnd);
+      elem.removeEventListener("mousedown", start);
+      elem.removeEventListener("touchstart", start);
+      window.removeEventListener("mouseup", end);
+      window.removeEventListener("touchend", end);
     };
   }, []);
 
   return (
-    <div className="blow-container">
-      <div
-        ref={animationRef}
-        className="blow-element"
-        style={{
-          transform: `translate(${
-            blowIntensity * 1.5
-          }px, ${-blowIntensity}px) rotate(${blowIntensity / 5}deg)`,
-          transition: "transform 0.2s ease-out",
-        }}
-      >
-        <img src={leafImage} alt="leaf" className="leaf-image" />
-      </div>
-
+    <div className="blow-container" ref={containerRef}>
       <div className="logo-section">
         <img src={mainLogo} alt="Logo" className="logo" />
+        {leaves.map((leaf) => (
+          <img
+            key={leaf.id}
+            src={leaf.src}
+            alt="leaf"
+            className={`leaf ${leaf.removed ? "fly-away" : ""}`}
+            style={{
+              top: `${leaf.y}%`,
+              left: `${leaf.x}%`,
+              transform: `rotate(${leaf.rotation}deg)`,
+            }}
+          />
+        ))}
       </div>
     </div>
   );
