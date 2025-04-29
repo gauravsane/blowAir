@@ -79,9 +79,9 @@ const App = () => {
     };
   }, []);
 
-  // useEffect(()=>{
-  //   setupFallbackInteraction();
-  // },[])
+  useEffect(()=>{
+    setupFallbackInteraction();
+  },[])
 
   // Generate particles when blowing
   useEffect(() => {
