@@ -1,21 +1,29 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
 import mainLogo from "./assets/Foracort12.png";
+import image1 from "./assets/1.png";
+import image2 from "./assets/2.png";
+import image3 from "./assets/3.png";
+import image4 from "./assets/4.png";
+import image5 from "./assets/5.png";
+import image6 from "./assets/6.png";
+import image7 from "./assets/7.png";
+import image8 from "./assets/8.png";
 
 const App = () => {
   const [blowIntensity, setBlowIntensity] = useState(0);
   const [isBlowing, setIsBlowing] = useState(false);
   const [isHolding, setIsHolding] = useState(false);
-  const [leafImage, setLeafImage] = useState("1.png");
+  const [leafImage, setLeafImage] = useState(image1);
   const leafImages = [
-    require("./assets/1.png"),
-    require("./assets/2.png"),
-    require("./assets/3.png"),
-    require("./assets/4.png"),
-    require("./assets/5.png"),
-    require("./assets/6.png"),
-    require("./assets/7.png"),
-    require("./assets/8.png"),
+    image1,
+    image2,
+    image3,
+    image4,
+    image5,
+    image6,
+    image7,
+    image8, 
   ];
 
   const animationRef = useRef(null);
