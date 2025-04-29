@@ -80,7 +80,7 @@ const App = () => {
   }, []);
 
   useEffect(()=>{
-    setupUserHoldDetection();
+    setupFallbackInteraction();
   },[])
 
   // Generate particles when blowing
