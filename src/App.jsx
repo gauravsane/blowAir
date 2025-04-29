@@ -5,6 +5,8 @@ const App = () => {
   const [isBlowing, setIsBlowing] = useState(false);
   const animationRef = useRef(null);
   const particlesRef = useRef([]);
+  const [isHolding, setIsHolding] = useState(false);
+
 
  useEffect(() => {
     let audioContext;
@@ -33,16 +35,17 @@ const App = () => {
           analyser.getByteFrequencyData(dataArray);
           const lowFreqRange = dataArray.slice(0, 10);
           const intensity = lowFreqRange.reduce((a, b) => a + b, 0) / lowFreqRange.length;
-    
-          if (intensity > 30) {
+        
+          if (intensity > 30 && isHolding) {
             setBlowIntensity(Math.min(intensity, 50));
             setIsBlowing(true);
           } else {
             setIsBlowing(false);
           }
-    
+        
           rafId = requestAnimationFrame(detectBlowing);
         };
+        
     
         detectBlowing();
       } catch (err) {
@@ -53,23 +56,19 @@ const App = () => {
     
 
     const setupFallbackInteraction = () => {
-      const handleInteraction = (e) => {
-        // Simulate blowing effect on mouse down or touch
-        setIsBlowing(true);
-        setBlowIntensity(40);
-        
-        const stopInteraction = () => {
-          setIsBlowing(false);
-          setBlowIntensity(0);
-        };
-        
-        window.addEventListener('mouseup', stopInteraction, { once: true });
-        window.addEventListener('touchend', stopInteraction, { once: true });
+      const handleHoldStart = () => setIsHolding(true);
+      const handleHoldEnd = () => {
+        setIsHolding(false);
+        setIsBlowing(false); // stop blowing effect on release
+        setBlowIntensity(0);
       };
-      
-      animationRef.current.addEventListener('mousedown', handleInteraction);
-      animationRef.current.addEventListener('touchstart', handleInteraction);
+    
+      animationRef.current.addEventListener('mousedown', handleHoldStart);
+      animationRef.current.addEventListener('touchstart', handleHoldStart);
+      window.addEventListener('mouseup', handleHoldEnd);
+      window.addEventListener('touchend', handleHoldEnd);
     };
+    
 
     initAudio();
 
@@ -79,6 +78,10 @@ const App = () => {
       if (audioContext) audioContext.close();
     };
   }, []);
+
+  useEffect(()=>{
+    setupUserHoldDetection();
+  },[])
 
   // Generate particles when blowing
   useEffect(() => {
