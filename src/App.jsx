@@ -21,11 +21,11 @@ const App = () => {
 
       const analyze = () => {
         analyser.getByteFrequencyData(dataArray);
-        const lowFreqRange = dataArray.slice(0, 10);
+        const lowFreqRange = dataArray.slice(0, 4);
         const intensity = lowFreqRange.reduce((a, b) => a + b, 0) / lowFreqRange.length;
 
-        if (intensity > 30 && isHolding) {
-          setBlowIntensity(Math.min(intensity, 50));
+        if (intensity > 20 && isHolding) {
+          setBlowIntensity(Math.min(intensity, 20));
           setIsBlowing(true);
         } else {
           setIsBlowing(false);
@@ -48,7 +48,8 @@ const App = () => {
         analyser = audioContext.createAnalyser();
         microphone = audioContext.createMediaStreamSource(mediaStream);
         microphone.connect(analyser);
-        analyser.fftSize = 256;
+        // analyser.fftSize = 256;
+        analyser.fftSize = 200;
 
         detectBlowing();
       } catch (err) {
