@@ -11,8 +11,14 @@ import image7 from "./assets/7.png";
 import image8 from "./assets/8.png";
 
 const leafImages = [
-  image1, image2, image3, image4,
-  image5, image6, image7, image8,
+  image1,
+  image2,
+  image3,
+  image4,
+  image5,
+  image6,
+  image7,
+  image8,
 ];
 
 const generateLeaves = (count) => {
@@ -20,16 +26,16 @@ const generateLeaves = (count) => {
   for (let i = 0; i < count; i++) {
     const img = leafImages[i % leafImages.length];
     const x = Math.random() * (500 - 60);
-    const y = Math.random() * (500 - 60);    
+    const y = Math.random() * (500 - 60);
     const rotation = Math.random() * 360;
-    leaves.push({ id: i, src: img, x, y, rotation, removed: false });
+    // leaves.push({ id: i, src: img, x, y, rotation, removed: false });
+    leaves.push({ id: i, src: img, x, y, rotation, hasMoved: false });
   }
   return leaves;
 };
 
-
 const App = () => {
-  const [leaves, setLeaves] = useState(generateLeaves(9000)); // Try 60 or more
+  const [leaves, setLeaves] = useState(generateLeaves(250)); // Try 60 or more
   const [isHolding, setIsHolding] = useState(false);
   const containerRef = useRef(null);
 
@@ -53,20 +59,19 @@ const App = () => {
         if (intensity > 20 && isHolding) {
           setLeaves((prev) =>
             prev.map((leaf) => {
-              if (leaf.removed || Math.random() > 0.3) return leaf; // 70% chance to move
-              const angle = Math.atan2(leaf.y - 250, leaf.x - 250); // angle from center (250,250)
-              const distance = 300 + Math.random() * 200; // fly away distance
+              if (leaf.hasMoved || Math.random() > 0.3) return leaf;
+              const angle = Math.atan2(leaf.y - 250, leaf.x - 250); // from center
+              const distance = 300 + Math.random() * 200;
               const newX = leaf.x + Math.cos(angle) * distance;
               const newY = leaf.y + Math.sin(angle) * distance;
               return {
                 ...leaf,
                 x: newX,
                 y: newY,
-                removed: true, // mark as moved to prevent reprocessing
+                hasMoved: true,
               };
             })
           );
-          
         }
 
         rafId = requestAnimationFrame(analyze);
@@ -77,7 +82,9 @@ const App = () => {
 
     const initAudio = async () => {
       try {
-        mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         analyser = audioContext.createAnalyser();
         microphone = audioContext.createMediaStreamSource(mediaStream);
@@ -128,11 +135,12 @@ const App = () => {
             key={leaf.id}
             src={leaf.src}
             alt="leaf"
-            className={`leaf ${leaf.removed ? "fly-away" : ""}`}
+            className={`leaf`} // no condition on removed
             style={{
-              top: `${leaf.y}rem`,
-              left: `${leaf.x}rem`,
+              top: `${leaf.y}px`, // use 'px' instead of '%' since x/y are from `Math.random() * 500`
+              left: `${leaf.x}px`,
               transform: `rotate(${leaf.rotation}deg)`,
+              position: "absolute",
             }}
           />
         ))}
