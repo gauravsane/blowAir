@@ -1,12 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
-import './App.css';
+import React, { useState, useEffect, useRef } from "react";
+import "./App.css";
 import mainLogo from "./assets/Foracort12.png";
 
 const App = () => {
   const [blowIntensity, setBlowIntensity] = useState(0);
   const [isBlowing, setIsBlowing] = useState(false);
   const [isHolding, setIsHolding] = useState(false);
-  const [leafImage, setLeafImage] = useState('1.png');
+  const [leafImage, setLeafImage] = useState("1.png");
+  const leafImages = [
+    require("./assets/1.png"),
+    require("./assets/2.png"),
+    require("./assets/3.png"),
+    require("./assets/4.png"),
+    require("./assets/5.png"),
+    require("./assets/6.png"),
+    require("./assets/7.png"),
+    require("./assets/8.png"),
+  ];
+
   const animationRef = useRef(null);
 
   useEffect(() => {
@@ -23,7 +34,8 @@ const App = () => {
       const analyze = () => {
         analyser.getByteFrequencyData(dataArray);
         const lowFreqRange = dataArray.slice(0, 4);
-        const intensity = lowFreqRange.reduce((a, b) => a + b, 0) / lowFreqRange.length;
+        const intensity =
+          lowFreqRange.reduce((a, b) => a + b, 0) / lowFreqRange.length;
 
         if (intensity > 10 && isHolding) {
           const cappedIntensity = Math.min(intensity, 50);
@@ -31,7 +43,7 @@ const App = () => {
           setIsBlowing(true);
           // Pick a random leaf image
           const imgIndex = Math.floor(Math.random() * 8) + 1;
-          setLeafImage(`${imgIndex}.png`);
+          setLeafImage(leafImages[imgIndex - 1]);
         } else {
           setIsBlowing(false);
           setBlowIntensity(0);
@@ -46,10 +58,12 @@ const App = () => {
     const initAudio = async () => {
       try {
         if (!navigator.mediaDevices?.getUserMedia) {
-          throw new Error('Microphone not supported.');
+          throw new Error("Microphone not supported.");
         }
 
-        mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         analyser = audioContext.createAnalyser();
         microphone = audioContext.createMediaStreamSource(mediaStream);
@@ -58,7 +72,7 @@ const App = () => {
 
         detectBlowing();
       } catch (err) {
-        console.error('Microphone error:', err);
+        console.error("Microphone error:", err);
       }
     };
 
@@ -66,7 +80,7 @@ const App = () => {
 
     return () => {
       if (rafId) cancelAnimationFrame(rafId);
-      if (mediaStream) mediaStream.getTracks().forEach(track => track.stop());
+      if (mediaStream) mediaStream.getTracks().forEach((track) => track.stop());
       if (audioContext) audioContext.close();
     };
   }, [isHolding]);
@@ -82,16 +96,16 @@ const App = () => {
       setBlowIntensity(0);
     };
 
-    elem.addEventListener('mousedown', handleHoldStart);
-    elem.addEventListener('touchstart', handleHoldStart);
-    window.addEventListener('mouseup', handleHoldEnd);
-    window.addEventListener('touchend', handleHoldEnd);
+    elem.addEventListener("mousedown", handleHoldStart);
+    elem.addEventListener("touchstart", handleHoldStart);
+    window.addEventListener("mouseup", handleHoldEnd);
+    window.addEventListener("touchend", handleHoldEnd);
 
     return () => {
-      elem.removeEventListener('mousedown', handleHoldStart);
-      elem.removeEventListener('touchstart', handleHoldStart);
-      window.removeEventListener('mouseup', handleHoldEnd);
-      window.removeEventListener('touchend', handleHoldEnd);
+      elem.removeEventListener("mousedown", handleHoldStart);
+      elem.removeEventListener("touchstart", handleHoldStart);
+      window.removeEventListener("mouseup", handleHoldEnd);
+      window.removeEventListener("touchend", handleHoldEnd);
     };
   }, []);
 
@@ -101,12 +115,13 @@ const App = () => {
         ref={animationRef}
         className="blow-element"
         style={{
-          transform: `translate(${blowIntensity * 1.5}px, ${-blowIntensity}px) rotate(${blowIntensity / 5}deg)`,
-          transition: 'transform 0.2s ease-out',
+          transform: `translate(${
+            blowIntensity * 1.5
+          }px, ${-blowIntensity}px) rotate(${blowIntensity / 5}deg)`,
+          transition: "transform 0.2s ease-out",
         }}
       >
-        <img src={`/images/${leafImage}`} alt="leaf" className="leaf-image" />
-        {!isBlowing && <div className="instruction">Hold & blow — or tap & blow</div>}
+        <img src={leafImage} alt="leaf" className="leaf-image" />
       </div>
 
       <div className="logo-section">
