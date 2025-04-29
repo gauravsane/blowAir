@@ -128,7 +128,7 @@ const App = () => {
             key={leaf.id}
             src={leaf.src}
             alt="leaf"
-            className={`leaf ${leaf.removed ? "fly-away" : ""}`}
+            className={`leaf `}
             style={{
               top: `${leaf.y}%`,
               left: `${leaf.x}%`,
