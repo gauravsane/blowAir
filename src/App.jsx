@@ -34,8 +34,8 @@ const App = () => {
           const lowFreqRange = dataArray.slice(0, 10);
           const intensity = lowFreqRange.reduce((a, b) => a + b, 0) / lowFreqRange.length;
     
-          if (intensity > 50) {
-            setBlowIntensity(Math.min(intensity, 100));
+          if (intensity > 30) {
+            setBlowIntensity(Math.min(intensity, 50));
             setIsBlowing(true);
           } else {
             setIsBlowing(false);
@@ -56,7 +56,7 @@ const App = () => {
       const handleInteraction = (e) => {
         // Simulate blowing effect on mouse down or touch
         setIsBlowing(true);
-        setBlowIntensity(80);
+        setBlowIntensity(40);
         
         const stopInteraction = () => {
           setIsBlowing(false);
