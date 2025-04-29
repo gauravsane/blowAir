@@ -128,10 +128,10 @@ const App = () => {
             key={leaf.id}
             src={leaf.src}
             alt="leaf"
-            className={`leaf `}
+            className={`leaf ${leaf.removed ? "fly-away" : ""}`}
             style={{
-              top: `${leaf.y}%`,
-              left: `${leaf.x}%`,
+              top: `${leaf.y}rem`,
+              left: `${leaf.x}rem`,
               transform: `rotate(${leaf.rotation}deg)`,
             }}
           />
