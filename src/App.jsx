@@ -49,7 +49,7 @@ const App = () => {
         microphone = audioContext.createMediaStreamSource(mediaStream);
         microphone.connect(analyser);
         // analyser.fftSize = 256;
-        analyser.fftSize = 200;
+        analyser.fftSize = 256;
 
         detectBlowing();
       } catch (err) {
