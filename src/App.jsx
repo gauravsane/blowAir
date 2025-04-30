@@ -184,7 +184,7 @@ const App = () => {
       </div>
       <div className="flex justify-center items-center">
         <button
-          className="bg-yellow-200 rounded-2xl p-4 text-2xl select-none"
+          className="bg-yellow-200 rounded-2xl p-4 text-xl select-none"
           onMouseDown={() => setIsHolding(true)}
           onTouchStart={() => setIsHolding(true)}
           onMouseUp={() => setIsHolding(false)}
