@@ -38,6 +38,7 @@ const App = () => {
   const [leaves, setLeaves] = useState(generateLeaves(250)); // Try 60 or more
   const [isHolding, setIsHolding] = useState(false);
   const containerRef = useRef(null);
+  const [logoVisible,setShowLogo] = useState(false);
 
   useEffect(() => {
     let audioContext;
@@ -57,6 +58,7 @@ const App = () => {
           lowFreqRange.reduce((a, b) => a + b, 0) / lowFreqRange.length;
 
         if (intensity > 200 && isHolding) {
+          setShowLogo(true)
           setLeaves((prev) =>
             prev.map((leaf) => {
               if (leaf.hasMoved || Math.random() > 0.3) return leaf;
@@ -148,7 +150,8 @@ const App = () => {
   return (
     <div className="blow-container" ref={containerRef}>
       <div className="logo-section">
-        <img src={mainLogo} alt="Logo" className="logo" />
+       { logoVisible ?
+        <img src={mainLogo} alt="Logo" className="logo" width={150}/> : ""}
         {leaves.map((leaf) => (
           <img
             key={leaf.id}
