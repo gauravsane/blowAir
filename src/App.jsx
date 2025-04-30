@@ -38,7 +38,7 @@ const App = () => {
   const [leaves, setLeaves] = useState(generateLeaves(250)); // Try 60 or more
   const [isHolding, setIsHolding] = useState(false);
   const containerRef = useRef(null);
-  const [logoVisible,setShowLogo] = useState(false);
+  const [logoVisible, setShowLogo] = useState(false);
 
   useEffect(() => {
     let audioContext;
@@ -58,7 +58,7 @@ const App = () => {
           lowFreqRange.reduce((a, b) => a + b, 0) / lowFreqRange.length;
 
         if (intensity > 200 && isHolding) {
-          setShowLogo(true)
+          setShowLogo(true);
           setLeaves((prev) =>
             prev.map((leaf) => {
               if (leaf.hasMoved || Math.random() > 0.3) return leaf;
@@ -127,47 +127,73 @@ const App = () => {
     };
   }, [isHolding]);
 
-  useEffect(() => {
-    const elem = containerRef.current;
-    if (!elem) return;
+  // useEffect(() => {
+  //   const elem = containerRef.current;
+  //   if (!elem) return;
 
-    const start = () => setIsHolding(true);
-    const end = () => setIsHolding(false);
+  //   const start = () => setIsHolding(true);
+  //   const end = () => setIsHolding(false);
 
-    elem.addEventListener("mousedown", start);
-    elem.addEventListener("touchstart", start);
-    window.addEventListener("mouseup", end);
-    window.addEventListener("touchend", end);
+  //   elem.addEventListener("mousedown", start);
+  //   elem.addEventListener("touchstart", start);
+  //   window.addEventListener("mouseup", end);
+  //   window.addEventListener("touchend", end);
 
-    return () => {
-      elem.removeEventListener("mousedown", start);
-      elem.removeEventListener("touchstart", start);
-      window.removeEventListener("mouseup", end);
-      window.removeEventListener("touchend", end);
-    };
-  }, []);
+  //   return () => {
+  //     elem.removeEventListener("mousedown", start);
+  //     elem.removeEventListener("touchstart", start);
+  //     window.removeEventListener("mouseup", end);
+  //     window.removeEventListener("touchend", end);
+  //   };
+  // }, []);
 
   return (
-    <div className="blow-container" ref={containerRef}>
-      <div className="logo-section">
-       { logoVisible ?
-        <img src={mainLogo} alt="Logo" className="logo" style={{width: 300,zIndex: 20,backgroundColor: "white",padding: "10px"}}/> : ""}
-        {leaves.map((leaf) => (
-          <img
-            key={leaf.id}
-            src={leaf.src}
-            alt="leaf"
-            className={`leaf`} // no condition on removed
-            style={{
-              top: `${leaf.y}px`, // use 'px' instead of '%' since x/y are from `Math.random() * 500`
-              left: `${leaf.x}px`,
-              transform: `rotate(${leaf.rotation}deg)`,
-              position: "absolute",
-            }}
-          />
-        ))}
+    <>
+      <div className="blow-container" ref={containerRef}>
+        <div className="logo-section">
+          {logoVisible ? (
+            <img
+              src={mainLogo}
+              alt="Logo"
+              className="logo"
+              style={{
+                width: 300,
+                zIndex: 20,
+                backgroundColor: "white",
+                padding: "10px",
+              }}
+            />
+          ) : (
+            ""
+          )}
+          {leaves.map((leaf) => (
+            <img
+              key={leaf.id}
+              src={leaf.src}
+              alt="leaf"
+              className={`leaf`} // no condition on removed
+              style={{
+                top: `${leaf.y}px`, // use 'px' instead of '%' since x/y are from `Math.random() * 500`
+                left: `${leaf.x}px`,
+                transform: `rotate(${leaf.rotation}deg)`,
+                position: "absolute",
+              }}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+      <div className="flex justify-center items-center">
+        <button
+          className="bg-yellow-200 rounded-2xl p-4 text-2xl"
+          onMouseDown={() => setIsHolding(true)}
+          onTouchStart={() => setIsHolding(true)}
+          onMouseUp={() => setIsHolding(false)}
+          onTouchEnd={() => setIsHolding(false)}
+        >
+          Hold here
+        </button>
+      </div>
+    </>
   );
 };
 
