@@ -38,9 +38,6 @@ const App = () => {
   const [leaves, setLeaves] = useState(generateLeaves(250)); // Try 60 or more
   const [isHolding, setIsHolding] = useState(false);
   const containerRef = useRef(null);
-  const [blowCount, setBlowCount] = useState(0);
-const blowThreshold = 3;
-
 
   useEffect(() => {
     let audioContext;
@@ -59,39 +56,23 @@ const blowThreshold = 3;
         const intensity =
           lowFreqRange.reduce((a, b) => a + b, 0) / lowFreqRange.length;
 
-          if (intensity > 20 && isHolding) {
-            setBlowCount((prev) => Math.min(prev + 1, blowThreshold));
-          
-            if (blowCount + 1 >= blowThreshold) {
-              setLeaves((prev) =>
-                prev.map((leaf) => {
-                  if (leaf.hasMoved || Math.random() > 0.3) return leaf;
-          
-                  const angle = Math.atan2(leaf.y - 250, leaf.x - 250);
-                  let newX, newY;
-                  let tries = 0;
-          
-                  do {
-                    const distance = 50 + Math.random() * 20;
-                    newX = leaf.x + Math.cos(angle) * distance;
-                    newY = leaf.y + Math.sin(angle) * distance;
-                    tries++;
-                  } while (
-                    Math.hypot(newX - 250, newY - 250) < 20 &&
-                    tries < 10
-                  );
-          
-                  return {
-                    ...leaf,
-                    x: newX,
-                    y: newY,
-                    hasMoved: true,
-                  };
-                })
-              );
-            }
-          }
-          
+        if (intensity > 20 && isHolding) {
+          setLeaves((prev) =>
+            prev.map((leaf) => {
+              if (leaf.hasMoved || Math.random() > 0.3) return leaf;
+              const angle = Math.atan2(leaf.y - 250, leaf.x - 250); // from center
+              const distance = 300 + Math.random() * 200;
+              const newX = leaf.x + Math.cos(angle) * distance;
+              const newY = leaf.y + Math.sin(angle) * distance;
+              return {
+                ...leaf,
+                x: newX,
+                y: newY,
+                hasMoved: true,
+              };
+            })
+          );
+        }
 
         rafId = requestAnimationFrame(analyze);
       };
@@ -108,7 +89,7 @@ const blowThreshold = 3;
         analyser = audioContext.createAnalyser();
         microphone = audioContext.createMediaStreamSource(mediaStream);
         microphone.connect(analyser);
-        analyser.fftSize = 256;
+        analyser.fftSize = 1024;
 
         detectBlowing();
       } catch (err) {
