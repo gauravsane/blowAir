@@ -38,7 +38,7 @@ const App = () => {
   const [leaves, setLeaves] = useState(generateLeaves(250)); // Try 60 or more
   const [isHolding, setIsHolding] = useState(false);
   const containerRef = useRef(null);
-  const [logoVisible,setShowLogo] = useState(false);
+  const [logoVisible,setShowLogo] = useState(true);
 
   useEffect(() => {
     let audioContext;
@@ -151,7 +151,7 @@ const App = () => {
     <div className="blow-container" ref={containerRef}>
       <div className="logo-section">
        { logoVisible ?
-        <img src={mainLogo} alt="Logo" className="logo" width={150}/> : ""}
+        <img src={mainLogo} alt="Logo" className="logo" style={{width: 300}}/> : ""}
         {leaves.map((leaf) => (
           <img
             key={leaf.id}
