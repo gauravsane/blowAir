@@ -147,7 +147,7 @@ const blowThreshold = 3;
 
   return (
     <div className="blow-container" ref={containerRef}>
-      {/* <div className="logo-section">
+      <div className="logo-section">
         <img src={mainLogo} alt="Logo" className="logo" />
         {leaves.map((leaf) => (
           <img
@@ -163,14 +163,7 @@ const blowThreshold = 3;
             }}
           />
         ))}
-      </div> */}
-      <div className="logo-wrapper" style={{ position: "relative" }}>
-  <img src={mainLogo} alt="Logo" className="logo" />
-  <div
-    className="logo-overlay"
-    style={{ opacity: 1 - blowCount / blowThreshold }}
-  />
-</div>
+      </div>
     </div>
   );
 };
