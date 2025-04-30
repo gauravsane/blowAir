@@ -56,7 +56,7 @@ const App = () => {
         const intensity =
           lowFreqRange.reduce((a, b) => a + b, 0) / lowFreqRange.length;
 
-        if (intensity > 120 && isHolding) {
+        if (intensity > 10 && isHolding) {
           setLeaves((prev) =>
             prev.map((leaf) => {
               if (leaf.hasMoved || Math.random() > 0.3) return leaf;
