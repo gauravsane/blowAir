@@ -59,7 +59,7 @@ const blowThreshold = 3;
         const intensity =
           lowFreqRange.reduce((a, b) => a + b, 0) / lowFreqRange.length;
 
-          if (intensity > 100 && isHolding) {
+          if (intensity > 20 && isHolding) {
             setBlowCount((prev) => Math.min(prev + 1, blowThreshold));
           
             if (blowCount + 1 >= blowThreshold) {
@@ -72,12 +72,12 @@ const blowThreshold = 3;
                   let tries = 0;
           
                   do {
-                    const distance = 50 + Math.random() * 100;
+                    const distance = 50 + Math.random() * 20;
                     newX = leaf.x + Math.cos(angle) * distance;
                     newY = leaf.y + Math.sin(angle) * distance;
                     tries++;
                   } while (
-                    Math.hypot(newX - 250, newY - 250) < 100 &&
+                    Math.hypot(newX - 250, newY - 250) < 20 &&
                     tries < 10
                   );
           
