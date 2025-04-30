@@ -56,7 +56,7 @@ const App = () => {
         const intensity =
           lowFreqRange.reduce((a, b) => a + b, 0) / lowFreqRange.length;
 
-        if (intensity > 20 && isHolding) {
+        if (intensity > 120 && isHolding) {
           setLeaves((prev) =>
             prev.map((leaf) => {
               if (leaf.hasMoved || Math.random() > 0.3) return leaf;
@@ -89,7 +89,7 @@ const App = () => {
         analyser = audioContext.createAnalyser();
         microphone = audioContext.createMediaStreamSource(mediaStream);
         microphone.connect(analyser);
-        analyser.fftSize = 1024;
+        analyser.fftSize = 256;
 
         detectBlowing();
       } catch (err) {
