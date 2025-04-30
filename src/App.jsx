@@ -151,7 +151,7 @@ const App = () => {
     <div className="blow-container" ref={containerRef}>
       <div className="logo-section">
        { logoVisible ?
-        <img src={mainLogo} alt="Logo" className="logo" style={{width: 300,zIndex: 20}}/> : ""}
+        <img src={mainLogo} alt="Logo" className="logo" style={{width: 300,zIndex: 20,backgroundColor: "white",padding: "10px"}}/> : ""}
         {leaves.map((leaf) => (
           <img
             key={leaf.id}
