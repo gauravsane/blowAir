@@ -25,8 +25,8 @@ const generateLeaves = (count) => {
   const leaves = [];
   for (let i = 0; i < count; i++) {
     const img = leafImages[i % leafImages.length];
-    const x = Math.random() * (500 - 60);
-    const y = Math.random() * (500 - 60);
+    const x = Math.random() * (600 - 60);
+    const y = Math.random() * (600 - 60);
     const rotation = Math.random() * 360;
     // leaves.push({ id: i, src: img, x, y, rotation, removed: false });
     leaves.push({ id: i, src: img, x, y, rotation, hasMoved: false });
@@ -38,7 +38,7 @@ const App = () => {
   const [leaves, setLeaves] = useState(generateLeaves(250)); // Try 60 or more
   const [isHolding, setIsHolding] = useState(false);
   const containerRef = useRef(null);
-  const [logoVisible,setShowLogo] = useState(true);
+  const [logoVisible,setShowLogo] = useState(false);
 
   useEffect(() => {
     let audioContext;
