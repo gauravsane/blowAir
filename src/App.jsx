@@ -38,6 +38,9 @@ const App = () => {
   const [leaves, setLeaves] = useState(generateLeaves(250)); // Try 60 or more
   const [isHolding, setIsHolding] = useState(false);
   const containerRef = useRef(null);
+  const [blowCount, setBlowCount] = useState(0);
+const blowThreshold = 3;
+
 
   useEffect(() => {
     let audioContext;
@@ -56,38 +59,39 @@ const App = () => {
         const intensity =
           lowFreqRange.reduce((a, b) => a + b, 0) / lowFreqRange.length;
 
-        if (intensity > 100 && isHolding) {
-          setLeaves((prev) =>
-            prev.map((leaf) => {
-              if (leaf.hasMoved || Math.random() > 0.3) return leaf;
-              // const angle = Math.atan2(leaf.y - 250, leaf.x - 250); // from center
-              // const distance = 300 + Math.random() * 200;
-              // const newX = leaf.x + Math.cos(angle) * distance;
-              // const newY = leaf.y + Math.sin(angle) * distance;
-              const angle = Math.atan2(leaf.y - 250, leaf.x - 250);
-              let newX, newY;
-              let tries = 0;
-
-              do {
-                const distance = 50 + Math.random() * 100; // shorter distance
-                newX = leaf.x + Math.cos(angle) * distance;
-                newY = leaf.y + Math.sin(angle) * distance;
-                tries++;
-              } while (
-                // prevent overlap with center (100px radius)
-                Math.hypot(newX - 250, newY - 250) < 100 &&
-                tries < 10
+          if (intensity > 100 && isHolding) {
+            setBlowCount((prev) => Math.min(prev + 1, blowThreshold));
+          
+            if (blowCount + 1 >= blowThreshold) {
+              setLeaves((prev) =>
+                prev.map((leaf) => {
+                  if (leaf.hasMoved || Math.random() > 0.3) return leaf;
+          
+                  const angle = Math.atan2(leaf.y - 250, leaf.x - 250);
+                  let newX, newY;
+                  let tries = 0;
+          
+                  do {
+                    const distance = 50 + Math.random() * 100;
+                    newX = leaf.x + Math.cos(angle) * distance;
+                    newY = leaf.y + Math.sin(angle) * distance;
+                    tries++;
+                  } while (
+                    Math.hypot(newX - 250, newY - 250) < 100 &&
+                    tries < 10
+                  );
+          
+                  return {
+                    ...leaf,
+                    x: newX,
+                    y: newY,
+                    hasMoved: true,
+                  };
+                })
               );
-
-              return {
-                ...leaf,
-                x: newX,
-                y: newY,
-                hasMoved: true,
-              };
-            })
-          );
-        }
+            }
+          }
+          
 
         rafId = requestAnimationFrame(analyze);
       };
@@ -143,7 +147,7 @@ const App = () => {
 
   return (
     <div className="blow-container" ref={containerRef}>
-      <div className="logo-section">
+      {/* <div className="logo-section">
         <img src={mainLogo} alt="Logo" className="logo" />
         {leaves.map((leaf) => (
           <img
@@ -159,7 +163,14 @@ const App = () => {
             }}
           />
         ))}
-      </div>
+      </div> */}
+      <div className="logo-wrapper" style={{ position: "relative" }}>
+  <img src={mainLogo} alt="Logo" className="logo" />
+  <div
+    className="logo-overlay"
+    style={{ opacity: 1 - blowCount / blowThreshold }}
+  />
+</div>
     </div>
   );
 };
